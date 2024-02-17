@@ -1,6 +1,5 @@
 import matplotlib.pyplot as pyl
 import matplotlib.patches as patches
-import itertools as itTools
 import datetime
 from matplotlib.animation import FuncAnimation
 

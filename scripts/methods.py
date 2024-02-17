@@ -1,5 +1,6 @@
 #Imports 
 import numpy as np 
+import itertools as itTools
 
 def hypotenuse(a : int, b : int) -> int: return np.sqrt((a*a) + (b*b))
 
@@ -50,7 +51,7 @@ def sectorize(points : list, lowBoundX : int, highBoundX : int, lowBoundY : int,
         return copy
 
 def findCloseWrapper(startX : int, startY : int, pointsX : list, pointsY : list) -> list: 
-    """
+    """ Connect points by jumping from point to point by the smallest jumps first
     :param startX: Initial x position
     :param startY: Initial y position
     :param pointsX: Possible x positions to go to
@@ -72,14 +73,22 @@ def findCloseWrapper(startX : int, startY : int, pointsX : list, pointsY : list)
     return [order, Xvalues, Yvalues]
 
 def findMinimumConnectWithStart(xPoints : list, yPoints : list) -> list:
-    if (len(xPoints) == 0): return [[]]
+    """ Find the absolute minimum path to connect the points 
+    :param xPoints: list of x coordinates to connect
+    :param yPoints: list of y coordinates to connect
+    :return the list of points in order to give the minimum path length
+    """
+    if (len(xPoints) == 0): return [[]] 
     if not(len(xPoints) == len(yPoints)): return [[]]
+    # Create possible orderings of n elements
     Xcombinations, Ycombinations = list(itTools.permutations(range(len(xPoints)), len(xPoints))), list(itTools.permutations(range(len(yPoints)), len(yPoints)))
     currentMinimum = 9999999
     FirstX, FirstY = 0, 0
     for i in range(len(Xcombinations)):
+        # Must begin with the first element (0, 0)
         if(list(Xcombinations[i])[0] != 0):
             break
+        # Creates the ordering
         xSet, ySet = list(Xcombinations[i]), list(Ycombinations[i])
         curvalue = 0
         for j in range(len(xSet) - 1):
