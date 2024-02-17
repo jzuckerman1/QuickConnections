@@ -3,19 +3,6 @@ import numpy as np
 
 def hypotenuse(a : int, b : int) -> int: return np.sqrt((a*a) + (b*b))
 
-def findCloseWrapper(startX : int, startY : int, pointsX : list, pointsY : list) -> list: #Formats the same as the others.
-    order = []
-    Xvalues, Yvalues = [startX], [startY]
-    pointsXCopy, pointsYCopy = pointsX.copy(), pointsY.copy()
-    for i in range(0, len(pointsX)):
-        bestPointInfo = findClose(startX, startY, pointsXCopy, pointsYCopy)
-        Xvalues += [bestPointInfo[0]]
-        Yvalues += [bestPointInfo[1]]
-        order += [pointsX.index(bestPointInfo[0])]
-        pointsXCopy.remove(bestPointInfo[0])
-        pointsYCopy.remove(bestPointInfo[1])
-    return [order, Xvalues, Yvalues]
-
 def findClose(xCur : int, yCur : int, xvals : list, yvals : list) -> list:
     currentClose = hypotenuse(xvals[0] - xCur, yvals[0] - yCur) + 1
     for i in range(len(xvals)):
@@ -61,6 +48,28 @@ def sectorize(points : list, lowBoundX : int, highBoundX : int, lowBoundY : int,
                if((points[i][0] <= highBoundX and points[i][0] >= lowBoundX) and(points[i][1] <= highBoundY and points[i][1] >= lowBoundY)):
                    copy.append(points[i])
         return copy
+
+def findCloseWrapper(startX : int, startY : int, pointsX : list, pointsY : list) -> list: 
+    """
+    :param startX: Initial x position
+    :param startY: Initial y position
+    :param pointsX: Possible x positions to go to
+    :param pointsY: Possible y positions to go to
+    :return Order that jumps from point to point going by what the smallest jump is
+    """
+    order = []
+    Xvalues, Yvalues = [startX], [startY]
+    pointsXCopy, pointsYCopy = pointsX.copy(), pointsY.copy()
+    for i in range(0, len(pointsX)):
+        # Find the closest point 
+        bestPointInfo = findClose(startX, startY, pointsXCopy, pointsYCopy)
+        Xvalues += [bestPointInfo[0]]
+        Yvalues += [bestPointInfo[1]]
+        order += [pointsX.index(bestPointInfo[0])]
+        # Remove it from consideration
+        pointsXCopy.remove(bestPointInfo[0])
+        pointsYCopy.remove(bestPointInfo[1])
+    return [order, Xvalues, Yvalues]
 
 def findMinimumConnectWithStart(xPoints : list, yPoints : list) -> list:
     if (len(xPoints) == 0): return [[]]
