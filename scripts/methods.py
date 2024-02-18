@@ -3,7 +3,7 @@ import numpy as np
 import itertools as itTools
 
 def hypotenuse(a : int, b : int) -> int: return np.sqrt((a*a) + (b*b))
-
+    
 def findClose(xCur : int, yCur : int, xvals : list, yvals : list) -> list:
     currentClose = hypotenuse(xvals[0] - xCur, yvals[0] - yCur) + 1
     for i in range(len(xvals)):
