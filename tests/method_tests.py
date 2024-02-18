@@ -44,6 +44,13 @@ class FunctionTests(unittest.TestCase):
         self.assertEqual(sectorize(points, -5, 1, 8, 10), [])
         self.assertEqual(sectorize(points, 8, 12, 0, 20), [[10, 10]])
         
+    def test_pointIt(self):
+        xValues, yValues = [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]
+        self.assertEqual(pointIt(xValues, yValues), [[1, 5], [2, 4], [3, 3], [4, 2], [5, 1]])
+        self.assertEqual(pointIt(xValues[:3], yValues[:3]), [[1, 5], [2, 4], [3, 3]])
+        self.assertEqual(pointIt([], []), [[]])
+        
+        
     
         
 if ( __name__ == "__main__"):

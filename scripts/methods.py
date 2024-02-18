@@ -43,33 +43,43 @@ def removeElements(points : list, toRemove : list) -> list:
     return ans
 
 def sectorize(points : list, lowBoundX : int, highBoundX : int, lowBoundY : int, highBoundY : int) -> list:
-        copy = []
-        if(len(points) > 0):
-            for i in range(len(points)): # 0 -> length - 1
-               if((points[i][0] <= highBoundX and points[i][0] >= lowBoundX) and(points[i][1] <= highBoundY and points[i][1] >= lowBoundY)):
-                   copy.append(points[i])
-        return copy
+    copy = []
+    if(len(points) > 0):
+        for i in range(len(points)): # 0 -> length - 1
+           if((points[i][0] <= highBoundX and points[i][0] >= lowBoundX) and(points[i][1] <= highBoundY and points[i][1] >= lowBoundY)):
+               copy.append(points[i])
+    return copy
+    
+def pointIt(xPoints : list, yPoints : list) -> list:
+    if (len(xPoints) == 0): return [[]] 
+    if not(len(xPoints) == len(yPoints)): return [[]]
+    answer = []
+    for i in range(len(xPoints)):
+        answer += [[xPoints[i], yPoints[i]]]
+    return answer
 
-def findCloseWrapper(startX : int, startY : int, pointsX : list, pointsY : list) -> list: 
+def findCloseWrapper(startX : int, startY : int, xPoints : list, yPoints : list) -> list: 
     """ Connect points by jumping from point to point by the smallest jumps first
     :param startX: Initial x position
     :param startY: Initial y position
-    :param pointsX: Possible x positions to go to
-    :param pointsY: Possible y positions to go to
+    :param xPoints: Possible x positions to go to
+    :param yPoints: Possible y positions to go to
     :return Order that jumps from point to point going by what the smallest jump is
     """
+    if (len(xPoints) == 0): return [[]] 
+    if not(len(xPoints) == len(yPoints)): return [[]]
     order = []
     Xvalues, Yvalues = [startX], [startY]
-    pointsXCopy, pointsYCopy = pointsX.copy(), pointsY.copy()
+    xPointsCopy, yPointsCopy = xPoints.copy(), yPoints.copy()
     for i in range(0, len(pointsX)):
         # Find the closest point 
-        bestPointInfo = findClose(startX, startY, pointsXCopy, pointsYCopy)
+        bestPointInfo = findClose(startX, startY, xPointsCopy, yPointsCopy)
         Xvalues += [bestPointInfo[0]]
         Yvalues += [bestPointInfo[1]]
-        order += [pointsX.index(bestPointInfo[0])]
+        order += [xPoints.index(bestPointInfo[0])]
         # Remove it from consideration
-        pointsXCopy.remove(bestPointInfo[0])
-        pointsYCopy.remove(bestPointInfo[1])
+        xPointsCopy.remove(bestPointInfo[0])
+        yPointsCopy.remove(bestPointInfo[1])
     return [order, Xvalues, Yvalues]
 
 def findMinimumConnectWithStart(xPoints : list, yPoints : list) -> list:
@@ -92,32 +102,40 @@ def findMinimumConnectWithStart(xPoints : list, yPoints : list) -> list:
         xSet, ySet = list(Xcombinations[i]), list(Ycombinations[i])
         curvalue = 0
         for j in range(len(xSet) - 1):
+            # Solve for the length of the given ordering
             xlength = xPoints[xSet[j + 1]] - xPoints[xSet[j]]
             ylength = yPoints[ySet[j + 1]] - yPoints[ySet[j]]
             curvalue += hypotenuse(xlength, ylength)
+            # If we already are above the current minimum, stop checking
             if curvalue > currentMinimum: break
+        # Rewrite the minimum and order
         if curvalue < currentMinimum: 
             order, currentMinimum = xSet,curvalue
+    # Put the points in the correct order
     fullOrder = []
     for i in range(len(xPoints)):
         fullOrder += pointIt([xPoints[order[i]]], [yPoints[order[i]]])
     return fullOrder
 
-
-#"""
-#Goal: Split the data in half and treat each segment as it's own stuff. 
-#Find the quickest way to connect points in one section, then find the closest section after.
-#"""
-def fullSectorize(x1 : list, y1 : list, startAt : list) -> list:
-    xhalf, yhalf = max(x1) / 2, max(y1) / 2
-    allPoints = pointIt(x1, y1)
+def fullSectorize(xPoints : list, yPoints : list, startAt : list) -> list:
+    """ Split points into quadrants and solve for the quick connections in each quadrant
+    :param xPoints: list of x coordinates to connect
+    :param yPoints: list of y coordinates to connect
+    :param startAt: the [x, y] to start at.
+    :return the list of points in order to give the minimum path length
+    """
+    if (len(xPoints) == 0): return [[]] 
+    if not(len(xPoints) == len(yPoints)): return [[]]
+    if not(len(startAt) == 2): return [[]]
+    xhalf, yhalf = max(xPoints) / 2, max(xPoints) / 2
+    allPoints = pointIt(xPoints, xPoints)
     q1, q2, q3, q4 = sectorize(allPoints, 0, xhalf, 0, yhalf), sectorize(allPoints, xhalf, max(x), 0, yhalf), sectorize(allPoints, 0, xhalf, yhalf, max(y)), sectorize(allPoints,  xhalf, max(x), yhalf, max(y))
-    next = q1
+    nextUp = q1
     q1 = []
     order = []
     print(q1)
     for i in range(0, 4):
-        order += findMinimumConnectWithStart([startAt[0]] + onlyIndex(next, 0), [startAt[1]] + onlyIndex(next, 1)) #only the x/y points of each index
+        order += findMinimumConnectWithStart([startAt[0]] + onlyIndex(nextUp, 0), [startAt[1]] + onlyIndex(nextUp, 1)) #only the x/y points of each index
         allPoints = removeElements(allPoints, order)
         #Redefine quarters to adjust for removed points
         if(len(allPoints) == 0):
@@ -126,15 +144,15 @@ def fullSectorize(x1 : list, y1 : list, startAt : list) -> list:
             closeWrapperAfterNext = findClose(order[-1][0], order[-1][1], onlyIndex(allPoints, 0), onlyIndex(allPoints, 1)) #finds the next closest point 
             startAt = [closeWrapperAfterNext[0], closeWrapperAfterNext[1]] #x,y for the next closest point
             if (startAt in q2):
-                next = q2
-                next.remove(startAt)
+                nextUp = q2
+                nextUp.remove(startAt)
                 q2 = []
             elif (startAt in q3):
-                next = q3
-                next.remove(startAt)
+                nextUp = q3
+                nextUp.remove(startAt)
                 q3 = []
             elif (startAt in q4):
-                next = q4
-                next.remove(startAt)
+                nextUp = q4
+                nextUp.remove(startAt)
                 q4 = []
     return order
