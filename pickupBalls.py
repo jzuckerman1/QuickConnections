@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import datetime
 from matplotlib.animation import FuncAnimation
+import datetime
 
 #My scripts
 exec(open("scripts\methods.py").read())
