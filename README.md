@@ -6,7 +6,7 @@ This project focuses on the capabilities of Python and computing capabilities. C
 
 ## Badges
 
-[![gnu License](https://img.shields.io/badge/License-GNU-green.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html#SEC1)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/license/mit/)
 [![Python](https://img.shields.io/badge/Python-v3.11.8-blue
 )](https://www.python.org/)
 
