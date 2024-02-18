@@ -1,4 +1,3 @@
-exec(open("scripts\methods.py").read())
-xPoints = [0, 1, 2, 10, 4, 5]
-Xcombinations = list(itTools.permutations(range(len(xPoints)), len(xPoints)))
-print(Xcombinations)
+def sum (x : int, y : int): return x + y
+
+print(sum(2,4,5))

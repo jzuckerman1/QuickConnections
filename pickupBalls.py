@@ -18,10 +18,8 @@ if ( __name__ == "__main__"):
 fig, ax = plt.subplots()
 
 DistanceForEachPlot = []
-
-points = 4 #10 is borderline for the max
    
-def main_plot(doRandomVal : bool, doClosestPoint : bool, doTotalMin : bool, doSectorize : bool, points : int, loop = False, startPoints = 2) -> None:
+def main_plot(doRandomVal : bool, doClosestPoint : bool, doTotalMin : bool, doSectorize : bool, points : int, loop = False, startPoints = 2, *args) -> None:
     if (loop == True):
         init = 2
         if(startPoints != 2):
@@ -145,7 +143,7 @@ def main_plot(doRandomVal : bool, doClosestPoint : bool, doTotalMin : bool, doSe
 
     """=========================================================================================================================="""
 
-def recordVals(randomMethod : bool, closestPointMethod : bool, bestMethod : bool, sectorizeMethod : bool) -> None:
+def recordVals(randomMethod : bool, closestPointMethod : bool, bestMethod : bool, sectorizeMethod : bool, numTrials = 1000, *args) -> None:
     closestPointValues, randomValues, bestValues, sectorizeValues = [], [], [], []
     writeToFile = open("data/pickupBallsResults.txt","a")
 
@@ -168,7 +166,7 @@ def recordVals(randomMethod : bool, closestPointMethod : bool, bestMethod : bool
     randomPointCorrect = 0
     sectorizePointCorrect = 0
 
-    for i in range(0, trialNum):
+    for i in range(0, numTrials):
         x,y  = list(np.random.uniform(0, 10, points)), list(np.random.uniform(0, 10, points))
         x1, y1 = x.copy(), y.copy() 
         xLoc,yLoc = [0], [0]
@@ -222,3 +220,7 @@ def recordVals(randomMethod : bool, closestPointMethod : bool, bestMethod : bool
         newLine()
         writeToFile.writelines("Sectorized Point Average :" + str(round(average(sectorizeValues), 3)) + "\n")
         writeToFile.writelines("Correctness Percentage: " + str(round(sectorizePointCorrect / trialNum, 3) * 100) + "%\n")
+        
+if (__name__ == "__main__"):
+    main_plot(True, True, True, True, 8)
+    recordVals(True, True, True, True, 10)
